@@ -1,19 +1,21 @@
 from flask import Flask, abort
-import random
+import requests
 import os
+import random
 
-app = Flask('service')
+app = Flask('gateway')
+service = os.environ['SERVICE_ADDRESS']
 
-@app.route('/random')
+@app.route('/')
 def index():
-  r = random.randint(1,6)
-  print(f'Rolled a {r}')
-  return str(r)
+    r = requests.get(service + '/random')
+    print(f'Got a {r.text} from the service')
+    return r.text
 
 @app.route('/health')
 def health():
-  r = random.randint(1,1000)
-  if r == 1:
-    print(f'error: {random.randint(500,599)}')
-    abort(500)
-  return '', 200
+    r = random.randint(1,1000)
+    if r == 1:
+        print(f'error: {random.randint(500,599)}')
+        abort(500)
+    return '', 200
